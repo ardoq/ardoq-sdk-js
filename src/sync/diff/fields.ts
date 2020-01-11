@@ -1,18 +1,10 @@
-import { FieldType, LispyString } from '../../ardoq/types';
-import { WorkingModel } from '..';
 import { mapValues } from 'lodash';
+import { RemoteModel, SimpleField } from '..';
 import { Diff } from '.';
 
-export type FieldDefinition = {
-  type: FieldType;
-  name: LispyString;
-  label: string;
-  description?: string;
-};
-
 export const diffFields = (
-  { fields: remote }: WorkingModel,
-  local: FieldDefinition[]
+  { fields: remote }: RemoteModel,
+  local: SimpleField[]
 ): Pick<Diff, 'fields'> => ({
   fields: mapValues(remote, fields => ({
     new: local.filter(({ name }) => fields[name] === undefined),

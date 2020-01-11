@@ -1,12 +1,12 @@
-import { WorkingGraph, WorkingModel } from 'sync';
+import { LocalGraph, RemoteModel } from 'sync';
 import { mapValues } from 'lodash';
 import { Diff } from '.';
 
 type TypesDiff = Pick<Diff, 'componentTypes' | 'referenceTypes'>;
 
 export const diffTypes = (
-  model: WorkingModel,
-  { referenceTypes, componentTypes }: WorkingGraph
+  model: RemoteModel,
+  { referenceTypes, componentTypes }: LocalGraph
 ): TypesDiff => ({
   componentTypes: mapValues(componentTypes, (compTypes, workspace) => ({
     new: compTypes.filter(

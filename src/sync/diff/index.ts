@@ -1,20 +1,17 @@
 import {
   WorkspaceId,
-  WorkingModel,
-  WorkingGraph,
+  RemoteModel,
+  LocalGraph,
   LocalReference,
   LocalComponent,
-  WorkingWorkspaces,
+  RemoteGraph,
+  RemoteComponent,
+  RemoteReference,
+  SimpleField,
 } from 'sync';
-import { diffFields, FieldDefinition } from './fields';
+import { diffFields } from './fields';
 import { diffTypes } from './types';
-import { Component, Reference } from '../../ardoq/types';
 import { diffGraph } from './graph';
-
-export type RemoteComponent<Fields> = Component &
-  Fields & { custom_id?: string };
-export type RemoteReference<Fields> = Reference &
-  Fields & { custom_id?: string };
 
 export type Diff<CF = {}, RF = {}> = {
   components: Record<
@@ -48,16 +45,16 @@ export type Diff<CF = {}, RF = {}> = {
   fields: Record<
     WorkspaceId,
     {
-      new: FieldDefinition[];
+      new: SimpleField[];
     }
   >;
 };
 
 export const calculateDiff = <CF, RF>(
-  model: WorkingModel,
-  remote: WorkingWorkspaces<CF, RF>,
-  graph: WorkingGraph<CF, RF>,
-  fields: FieldDefinition[]
+  model: RemoteModel,
+  remote: RemoteGraph<CF, RF>,
+  graph: LocalGraph<CF, RF>,
+  fields: SimpleField[]
 ): Diff => ({
   ...diffTypes(model, graph),
   ...diffFields(model, fields),

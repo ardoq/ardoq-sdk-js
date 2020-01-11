@@ -9,8 +9,8 @@ import {
   Reference,
   AggregatedWorkspace,
   FieldType,
+  LispyString,
 } from '../ardoq/types';
-import { FieldDefinition } from './diff/fields';
 import { getAggregatedWorkspace, getModel, getFields } from '../ardoq/api';
 import { calculateDiff } from './diff';
 
@@ -31,7 +31,6 @@ export type SimpleComponent<Fields> = {
   description?: string;
   fields?: Fields;
 };
-
 export type SimpleReference<Fields> = {
   custom_id: ReferenceId;
   type: string;
@@ -40,25 +39,26 @@ export type SimpleReference<Fields> = {
   description?: string;
   fields?: Fields;
 };
-
 export type Graph<ComponentFields, ReferenceFields> = {
   components: SimpleComponent<ComponentFields>[];
   references: SimpleReference<ReferenceFields>[];
+};
+
+export type SimpleField = {
+  type: FieldType;
+  name: LispyString;
+  label: string;
+  description?: string;
 };
 
 export type LocalComponent<Fields> = SimpleComponent<Fields>;
 export type LocalReference<Fields> = SimpleReference<Fields> & {
   workspace: WorkspaceId;
 };
-export type RemoteComponent<Fields> = Component &
-  Fields & { custom_id: ComponentId };
-export type RemoteReference<Fields> = Reference &
-  Fields & { custom_id: ReferenceId };
-
-export type WorkingGraph<ComponentFields = {}, ReferenceFields = {}> = {
+export type LocalGraph<ComponentFields = {}, ReferenceFields = {}> = {
   components: Record<
     WorkspaceId,
-    Record<ComponentId, SimpleComponent<ComponentFields>>
+    Record<ComponentId, LocalComponent<ComponentFields>>
   >;
   references: Record<
     WorkspaceId,
@@ -68,18 +68,21 @@ export type WorkingGraph<ComponentFields = {}, ReferenceFields = {}> = {
   componentTypes: Record<WorkspaceId, string[]>;
 };
 
-export type WorkingModel = {
+export type RemoteComponent<Fields> = Component &
+  Fields & { custom_id: ComponentId };
+export type RemoteReference<Fields> = Reference &
+  Fields & { custom_id: ReferenceId };
+export type RemoteGraph<CF, RF> = {
+  components: Record<WorkspaceId, Record<ComponentId, RemoteComponent<CF>>>;
+  references: Record<WorkspaceId, Record<ReferenceId, RemoteReference<RF>>>;
+};
+export type RemoteModel = {
   referenceTypes: Record<WorkspaceId, Record<string, ModelReference>>;
   componentTypes: Record<WorkspaceId, Record<string, ModelComponent>>;
   fields: Record<WorkspaceId, Record<string, Field>>;
 };
 
-export type WorkingWorkspaces<CF, RF> = {
-  components: Record<WorkspaceId, Record<ComponentId, RemoteComponent<CF>>>;
-  references: Record<WorkspaceId, Record<ReferenceId, RemoteReference<RF>>>;
-};
-
-const REQUIRED_FIELDS = [
+const REQUIRED_FIELDS: SimpleField[] = [
   {
     type: FieldType.TEXT,
     name: 'custom_id',
@@ -88,9 +91,7 @@ const REQUIRED_FIELDS = [
   },
 ];
 
-const buildWorkingGraph = <CF, RF>(
-  graph: Graph<CF, RF>
-): WorkingGraph<CF, RF> => {
+const buildLocalGraph = <CF, RF>(graph: Graph<CF, RF>): LocalGraph<CF, RF> => {
   const cbyi = pivot(graph.components, 'custom_id');
   const components = mapValues(
     group(graph.components, 'workspace'),
@@ -116,10 +117,10 @@ const buildWorkingGraph = <CF, RF>(
   return { components, references, componentTypes, referenceTypes };
 };
 
-const buildWorkingModel = (
+const buildRemoteModel = (
   model: Record<WorkspaceId, Model>,
   fields: Field[]
-): WorkingModel => {
+): RemoteModel => {
   const fieldsByModel = group(fields, 'model');
   return {
     referenceTypes: mapValues(model, model =>
@@ -130,9 +131,9 @@ const buildWorkingModel = (
   };
 };
 
-const buildWorkingWorkspaces = <CF, RF>(
+const buildRemoteGraph = <CF, RF>(
   workspaces: Record<WorkspaceId, AggregatedWorkspace>
-): WorkingWorkspaces<Partial<CF>, Partial<RF>> => ({
+): RemoteGraph<Partial<CF>, Partial<RF>> => ({
   components: mapValues(workspaces, workspace =>
     pivot(
       workspace.components as (Component & Partial<RemoteComponent<CF>>)[],
@@ -147,12 +148,12 @@ const buildWorkingWorkspaces = <CF, RF>(
   ),
 });
 
-export const updateWorkspace = async <CF, RF>(
+export const sync = async <CF, RF>(
   authToken: string,
   org: string,
   workspaces: Record<string, WorkspaceId>,
   graph: Graph<CF, RF>,
-  fields: FieldDefinition[] = [],
+  fields: SimpleField[] = [],
   url = 'https://app.ardoq.com/api/'
 ) => {
   const aqWorkspaces = await mapValuesAsync(workspaces, workspace =>
@@ -165,11 +166,11 @@ export const updateWorkspace = async <CF, RF>(
 
   const aqFields = await getFields(url, authToken, org);
 
-  const workingGraph = buildWorkingGraph(graph);
-  const workingModel = buildWorkingModel(aqModels, aqFields);
-  const WorkingWorkspaces = buildWorkingWorkspaces(aqWorkspaces);
+  const localGraph = buildLocalGraph(graph);
+  const remoteModel = buildRemoteModel(aqModels, aqFields);
+  const remoteGraph = buildRemoteGraph(aqWorkspaces);
 
-  const diff = calculateDiff(workingModel, WorkingWorkspaces, workingGraph, [
+  const diff = calculateDiff(remoteModel, remoteGraph, localGraph, [
     ...fields,
     ...REQUIRED_FIELDS,
   ]);

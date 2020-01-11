@@ -1,12 +1,14 @@
 import {
   LocalComponent,
   LocalReference,
-  WorkingGraph,
-  WorkingWorkspaces,
-  WorkingModel,
+  LocalGraph,
+  RemoteGraph,
+  RemoteModel,
+  RemoteComponent,
+  RemoteReference,
 } from '..';
 import { hasAllSameAttributes, setIntersection, setDifference } from '../utils';
-import { RemoteComponent, RemoteReference, Diff } from '.';
+import { Diff } from '.';
 import { mapValues, keys } from 'lodash';
 
 const hasComponentChanged = <Fields>(
@@ -52,9 +54,9 @@ const hasReferenceChanged = <Fields>(
 };
 
 export const diffGraph = <CF, RF>(
-  model: WorkingModel,
-  remote: WorkingWorkspaces<CF, RF>,
-  local: WorkingGraph<CF, RF>
+  model: RemoteModel,
+  remote: RemoteGraph<CF, RF>,
+  local: LocalGraph<CF, RF>
 ): Pick<Diff, 'components' | 'references'> => {
   const remoteRefTypes = mapValues(
     model.referenceTypes,
