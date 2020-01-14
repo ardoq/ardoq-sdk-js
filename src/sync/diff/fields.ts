@@ -6,7 +6,7 @@ export const diffFields = (
   { fields: remote }: RemoteModel,
   local: SimpleField[]
 ): Pick<Diff, 'fields'> => ({
-  fields: mapValues(remote, fields => ({
-    new: local.filter(({ name }) => fields[name] === undefined),
+  fields: mapValues(remote, remote => ({
+    new: local.filter(({ name }) => remote[name] === undefined),
   })),
 });

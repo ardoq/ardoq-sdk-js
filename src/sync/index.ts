@@ -1,5 +1,5 @@
-import { map, mapValues, mapKeys } from 'lodash';
-import { pivot, group, unique, mapValuesAsync } from './utils';
+import { map, mapValues, mapKeys, reduce } from 'lodash';
+import { pivot, group, unique, mapValuesAsync, construct } from './utils';
 import {
   ModelReference,
   ModelComponent,
@@ -10,9 +10,11 @@ import {
   AggregatedWorkspace,
   FieldType,
   LispyString,
+  AqId,
 } from '../ardoq/types';
 import { getAggregatedWorkspace, getModel, getFields } from '../ardoq/api';
 import { calculateDiff } from './diff';
+import { consolidateDiff } from './consolidate';
 
 /*
  * Sync a simple graph to Ardoq
@@ -72,7 +74,7 @@ export type RemoteComponent<Fields> = Component &
   Fields & { custom_id: ComponentId };
 export type RemoteReference<Fields> = Reference &
   Fields & { custom_id: ReferenceId };
-export type RemoteGraph<CF, RF> = {
+export type RemoteGraph<CF = {}, RF = {}> = {
   components: Record<WorkspaceId, Record<ComponentId, RemoteComponent<CF>>>;
   references: Record<WorkspaceId, Record<ReferenceId, RemoteReference<RF>>>;
 };
@@ -148,6 +150,67 @@ const buildRemoteGraph = <CF, RF>(
   ),
 });
 
+export type IdMap = {
+  refTypes: Record<WorkspaceId, Record<string, number>>;
+  compTypes: Record<WorkspaceId, Record<string, string>>;
+  components: Record<ComponentId, AqId>;
+  compWorkspaces: Record<ComponentId, AqId>;
+};
+
+export const collectRefTypes = (
+  refTypes: Record<string, ModelReference>
+): Record<string, number> =>
+  construct(map(refTypes, ({ name, id }) => [name, id]));
+
+export function collectCompTypes(
+  compTypes: Record<string, ModelComponent>
+): Record<string, string> {
+  return reduce(
+    compTypes,
+    (acc, comp) => ({
+      ...acc,
+      ...collectCompTypes(comp.children),
+      [comp.name]: comp.id,
+    }),
+    {}
+  );
+}
+
+const buildIdMap = (
+  workspaces: Record<string, WorkspaceId>,
+  model: RemoteModel,
+  local: LocalGraph,
+  remote: RemoteGraph
+): IdMap => ({
+  refTypes: mapValues(model.referenceTypes, refTypes =>
+    collectRefTypes(refTypes)
+  ),
+  compTypes: mapValues(model.componentTypes, compTypes =>
+    collectCompTypes(compTypes)
+  ),
+  components: construct([
+    ...map(local.components, components =>
+      map(components, ({ custom_id }) => [custom_id, custom_id] as const)
+    ).flat(),
+    ...map(remote.components, (components, workspace) =>
+      map(components, ({ custom_id, _id }) => [custom_id, _id] as const).filter(
+        ([custom_id, _id]) =>
+          // Must check this is not a component that changed workspace
+          local.components[workspace][custom_id] !== undefined
+      )
+    ).flat(),
+  ]),
+  compWorkspaces: construct(
+    map(local.components, components =>
+      map(
+        components,
+        ({ custom_id, workspace }) =>
+          [custom_id, workspaces[workspace]] as const
+      )
+    ).flat()
+  ),
+});
+
 export const sync = async <CF, RF>(
   authToken: string,
   org: string,
@@ -166,13 +229,19 @@ export const sync = async <CF, RF>(
 
   const aqFields = await getFields(url, authToken, org);
 
+  // Create representations that are simpler to use. Lookup by workspace name and custom/local ids
   const localGraph = buildLocalGraph(graph);
   const remoteModel = buildRemoteModel(aqModels, aqFields);
-  const remoteGraph = buildRemoteGraph(aqWorkspaces);
+  const remoteGraph = buildRemoteGraph<CF, RF>(aqWorkspaces);
 
-  const diff = calculateDiff(remoteModel, remoteGraph, localGraph, [
+  const ids = buildIdMap(workspaces, remoteModel, localGraph, remoteGraph);
+
+  const diff = calculateDiff(remoteModel, remoteGraph, localGraph, ids, [
     ...fields,
     ...REQUIRED_FIELDS,
   ]);
-  console.log(JSON.stringify(diff, null, 2));
+
+  console.log('DIFF', JSON.stringify(diff, null, 2));
+
+  await consolidateDiff(url, authToken, org, aqModels, diff, ids);
 };

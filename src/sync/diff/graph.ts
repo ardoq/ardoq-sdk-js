@@ -3,9 +3,9 @@ import {
   LocalReference,
   LocalGraph,
   RemoteGraph,
-  RemoteModel,
   RemoteComponent,
   RemoteReference,
+  IdMap,
 } from '..';
 import { hasAllSameAttributes, setIntersection, setDifference } from '../utils';
 import { Diff } from '.';
@@ -54,19 +54,10 @@ const hasReferenceChanged = <Fields>(
 };
 
 export const diffGraph = <CF, RF>(
-  model: RemoteModel,
+  ids: IdMap,
   remote: RemoteGraph<CF, RF>,
   local: LocalGraph<CF, RF>
 ): Pick<Diff, 'components' | 'references'> => {
-  const remoteRefTypes = mapValues(
-    model.referenceTypes,
-    (referenceTypes): Record<string, number> => mapValues(referenceTypes, 'id')
-  );
-  const remoteCompIds: Record<
-    string,
-    Record<string, string>
-  > = mapValues(remote.components, components => mapValues(components, '_id'));
-
   return {
     components: mapValues(remote.components, (remote, workspace) => ({
       new: setDifference(keys(local.components[workspace]), keys(remote)).map(
@@ -82,7 +73,7 @@ export const diffGraph = <CF, RF>(
           local.components[workspace][component],
         ])
         .filter(([remote, local]) =>
-          hasComponentChanged(remoteCompIds[workspace], local, remote)
+          hasComponentChanged(ids.components, local, remote)
         ),
     })),
     references: mapValues(remote.references, (remote, workspace) => ({
@@ -100,8 +91,8 @@ export const diffGraph = <CF, RF>(
         ])
         .filter(([remote, local]) =>
           hasReferenceChanged(
-            remoteCompIds[workspace],
-            remoteRefTypes[workspace],
+            ids.components,
+            ids.refTypes[workspace],
             local,
             remote
           )

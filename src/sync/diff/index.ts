@@ -8,6 +8,7 @@ import {
   RemoteComponent,
   RemoteReference,
   SimpleField,
+  IdMap,
 } from 'sync';
 import { diffFields } from './fields';
 import { diffTypes } from './types';
@@ -54,9 +55,10 @@ export const calculateDiff = <CF, RF>(
   model: RemoteModel,
   remote: RemoteGraph<CF, RF>,
   graph: LocalGraph<CF, RF>,
+  ids: IdMap,
   fields: SimpleField[]
 ): Diff => ({
   ...diffTypes(model, graph),
   ...diffFields(model, fields),
-  ...diffGraph(model, remote, graph),
+  ...diffGraph(ids, remote, graph),
 });

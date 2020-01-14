@@ -13,7 +13,7 @@ export const destruct = <K extends string | number, V>(
 ): [K, V][] => Object.entries(r) as [K, V][];
 
 export const construct = <K extends PropertyKey, V>(
-  arr: [K, V][]
+  arr: readonly (readonly [K, V])[]
 ): Record<K, V> =>
   arr.reduce((acc, [k, v]) => ({ ...acc, [k]: v }), {} as Record<K, V>);
 
