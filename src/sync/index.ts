@@ -196,7 +196,10 @@ const buildIdMap = (
       map(components, ({ custom_id, _id }) => [custom_id, _id] as const).filter(
         ([custom_id, _id]) =>
           // Must check this is not a component that changed workspace
-          local.components[workspace][custom_id] !== undefined
+          !(
+            local.components[workspace] &&
+            local.components[workspace][custom_id] === undefined
+          )
       )
     ).flat(),
   ]),
