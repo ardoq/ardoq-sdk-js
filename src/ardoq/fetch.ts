@@ -14,7 +14,6 @@ export const fetchArdoq = async <T = unknown>(
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET',
   body?: any
 ): Promise<T> => {
-  console.log(method, url, JSON.stringify(queryParams), JSON.stringify(body));
   const response = await fetch(url + encodeQuery(queryParams), {
     method,
     body: body ? JSON.stringify(body) : undefined,
@@ -29,7 +28,6 @@ export const fetchArdoq = async <T = unknown>(
     return {} as any;
   } else if (response.ok) {
     return (await response.json()) as T;
-  } else {
-    throw response;
   }
+  throw response;
 };

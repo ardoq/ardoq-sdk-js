@@ -1,12 +1,12 @@
 import { mapValues } from 'lodash';
-import { RemoteModel, SimpleField } from '..';
-import { Diff } from '.';
+import { RemoteModel, SimpleField } from '../types';
+import { Diff } from './types';
 
 export const diffFields = (
-  { fields: remote }: RemoteModel,
+  { fields }: RemoteModel,
   local: SimpleField[]
 ): Pick<Diff, 'fields'> => ({
-  fields: mapValues(remote, remote => ({
+  fields: mapValues(fields, remote => ({
     new: local.filter(({ name }) => remote[name] === undefined),
   })),
 });

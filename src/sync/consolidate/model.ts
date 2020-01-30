@@ -1,9 +1,9 @@
-import { WorkspaceId } from '..';
-import { Diff } from '../diff';
+import { WorkspaceId } from '../types';
 import { destruct, construct } from '../utils';
 import { Model, LineStyle, LineEnding } from '../../ardoq/types';
 import { map } from 'lodash';
 import { updateModel } from '../../ardoq/api';
+import { Diff } from '../diff/types';
 
 const REFERENCE_TYPE_DEFAULTS = {
   line: LineStyle.SOLID,
@@ -26,7 +26,7 @@ const COMPONENT_TYPE_DEFAULTS = {
 };
 
 const randomCompTypeId = () =>
-  'p' + (new Date().getTime() + Math.round(Math.random() * 10000));
+  `p${new Date().getTime() + Math.round(Math.random() * 10000)}`;
 
 export const consolidateTypes = (
   url: string,
@@ -36,23 +36,23 @@ export const consolidateTypes = (
   { referenceTypes, componentTypes }: Diff
 ) => {
   const { model: newModel, promises } = destruct(model).reduce(
-    (acc, [workspace, model]) => {
+    (acc, [workspace, wsModel]) => {
       const newRefTypes = referenceTypes[workspace].new;
       const newCompTypes = componentTypes[workspace].new;
 
       if (newRefTypes.length === 0 && newCompTypes.length === 0) {
         return {
-          model: { ...acc.model, [workspace]: model },
+          model: { ...acc.model, [workspace]: wsModel },
           promises: acc.promises,
         };
       }
 
-      const lastRefId = Math.max(...map(model.referenceTypes, 'id'));
+      const lastRefId = Math.max(...map(wsModel.referenceTypes, 'id'));
 
       const consolidatedModel: Model = {
-        ...model,
+        ...wsModel,
         referenceTypes: {
-          ...model.referenceTypes,
+          ...wsModel.referenceTypes,
           ...construct(
             newRefTypes.map((name, i) => {
               const id = lastRefId + 1 + i;
@@ -66,7 +66,7 @@ export const consolidateTypes = (
           ),
         },
         root: {
-          ...model.root,
+          ...wsModel.root,
           ...construct(
             newCompTypes.map(name => {
               const id = randomCompTypeId();

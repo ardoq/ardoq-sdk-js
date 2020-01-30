@@ -1,55 +1,14 @@
 import {
-  WorkspaceId,
   RemoteModel,
   LocalGraph,
-  LocalReference,
-  LocalComponent,
   RemoteGraph,
-  RemoteComponent,
-  RemoteReference,
   SimpleField,
   IdMap,
-} from 'sync';
+} from '../types';
 import { diffFields } from './fields';
-import { diffTypes } from './types';
+import { diffTypes } from './model';
 import { diffGraph } from './graph';
-
-export type Diff<CF = {}, RF = {}> = {
-  components: Record<
-    WorkspaceId,
-    {
-      new: LocalComponent<CF>[];
-      updated: [RemoteComponent<CF>, LocalComponent<CF>][];
-      deleted: RemoteComponent<CF>[];
-    }
-  >;
-  references: Record<
-    WorkspaceId,
-    {
-      new: LocalReference<RF>[];
-      updated: [RemoteReference<RF>, LocalReference<RF>][];
-      deleted: RemoteReference<RF>[];
-    }
-  >;
-  referenceTypes: Record<
-    WorkspaceId,
-    {
-      new: string[];
-    }
-  >;
-  componentTypes: Record<
-    WorkspaceId,
-    {
-      new: string[];
-    }
-  >;
-  fields: Record<
-    WorkspaceId,
-    {
-      new: SimpleField[];
-    }
-  >;
-};
+import { Diff } from './types';
 
 export const calculateDiff = <CF, RF>(
   model: RemoteModel,

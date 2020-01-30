@@ -1,5 +1,4 @@
-import { Diff } from '../diff';
-import { IdMap } from '..';
+import { map } from 'lodash';
 import {
   batch,
   updateComponent,
@@ -7,7 +6,8 @@ import {
   bulkDeleteComponent,
   deleteReference,
 } from '../../ardoq/api';
-import { map } from 'lodash';
+import { IdMap } from '../types';
+import { Diff } from '../diff/types';
 
 export const consolidateGraph = async (
   url: string,
@@ -16,10 +16,10 @@ export const consolidateGraph = async (
   ids: IdMap,
   diff: Diff
 ) => {
-  const newReferences = map(diff.references, (diff, workspace) =>
-    diff.new.map(ref => ({
-      batchId: ref.custom_id,
-      custom_id: ref.custom_id,
+  const newReferences = map(diff.references, (wsDiff, workspace) =>
+    wsDiff.new.map(ref => ({
+      batchId: ref.customId,
+      customId: ref.customId,
       rootWorkspace: ids.compWorkspaces[ref.source],
       targetWorkspace: ids.compWorkspaces[ref.target],
       source: ids.components[ref.source],
@@ -29,11 +29,11 @@ export const consolidateGraph = async (
       ...ref.fields,
     }))
   ).flat();
-  const newComponents = map(diff.components, (diff, workspace) =>
-    diff.new.map(comp => ({
-      batchId: comp.custom_id,
-      custom_id: comp.custom_id,
-      rootWorkspace: ids.compWorkspaces[comp.custom_id],
+  const newComponents = map(diff.components, (wsDiff, workspace) =>
+    wsDiff.new.map(comp => ({
+      batchId: comp.customId,
+      customId: comp.customId,
+      rootWorkspace: ids.compWorkspaces[comp.customId],
       typeId: ids.compTypes[workspace][comp.type],
       description: comp.description || null,
       name: comp.name,

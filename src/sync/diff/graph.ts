@@ -6,10 +6,10 @@ import {
   RemoteComponent,
   RemoteReference,
   IdMap,
-} from '..';
+} from '../types';
 import { hasAllSameAttributes, setIntersection, setDifference } from '../utils';
-import { Diff } from '.';
 import { mapValues, keys } from 'lodash';
+import { Diff } from './types';
 
 const hasComponentChanged = <Fields>(
   remoteCompIds: Record<string, string>,
@@ -55,46 +55,54 @@ const hasReferenceChanged = <Fields>(
 
 export const diffGraph = <CF, RF>(
   ids: IdMap,
-  remote: RemoteGraph<CF, RF>,
-  local: LocalGraph<CF, RF>
+  remoteGraph: RemoteGraph<CF, RF>,
+  localGraph: LocalGraph<CF, RF>
 ): Pick<Diff, 'components' | 'references'> => {
   return {
-    components: mapValues(remote.components, (remote, workspace) => ({
-      new: setDifference(keys(local.components[workspace]), keys(remote)).map(
-        component => local.components[workspace][component]
-      ),
+    components: mapValues(remoteGraph.components, (remote, workspace) => ({
+      new: setDifference(
+        keys(localGraph.components[workspace]),
+        keys(remote)
+      ).map(component => localGraph.components[workspace][component]),
       deleted: setDifference(
         keys(remote),
-        keys(local.components[workspace])
+        keys(localGraph.components[workspace])
       ).map(component => remote[component]),
-      updated: setIntersection(keys(remote), keys(local.components[workspace]))
+      updated: setIntersection(
+        keys(remote),
+        keys(localGraph.components[workspace])
+      )
         .map((component): [RemoteComponent<CF>, LocalComponent<CF>] => [
           remote[component],
-          local.components[workspace][component],
+          localGraph.components[workspace][component],
         ])
-        .filter(([remote, local]) =>
-          hasComponentChanged(ids.components, local, remote)
+        .filter(([remoteComponent, local]) =>
+          hasComponentChanged(ids.components, local, remoteComponent)
         ),
     })),
-    references: mapValues(remote.references, (remote, workspace) => ({
-      new: setDifference(keys(local.references[workspace]), keys(remote)).map(
-        reference => local.references[workspace][reference]
-      ),
+    references: mapValues(remoteGraph.references, (remote, workspace) => ({
+      new: setDifference(
+        keys(localGraph.references[workspace]),
+        keys(remote)
+      ).map(reference => localGraph.references[workspace][reference]),
       deleted: setDifference(
         keys(remote),
-        keys(local.references[workspace])
+        keys(localGraph.references[workspace])
       ).map(reference => remote[reference]),
-      updated: setIntersection(keys(remote), keys(local.references[workspace]))
+      updated: setIntersection(
+        keys(remote),
+        keys(localGraph.references[workspace])
+      )
         .map((reference): [RemoteReference<RF>, LocalReference<RF>] => [
           remote[reference],
-          local.references[workspace][reference],
+          localGraph.references[workspace][reference],
         ])
-        .filter(([remote, local]) =>
+        .filter(([remoteReference, local]) =>
           hasReferenceChanged(
             ids.components,
             ids.refTypes[workspace],
             local,
-            remote
+            remoteReference
           )
         ),
     })),

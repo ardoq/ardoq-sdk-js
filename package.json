@@ -10,13 +10,13 @@
     "start": "tsdx watch",
     "build": "tsdx build",
     "test": "tsdx test",
-    "lint": "tsdx lint",
+    "lint": "yarn eslint --ext .ts src",
     "prepare": "tsdx build"
   },
   "peerDependencies": {},
   "husky": {
     "hooks": {
-      "pre-commit": "tsdx lint"
+      "pre-commit": "yarn lint"
     }
   },
   "prettier": {
@@ -29,6 +29,7 @@
   "author": "Tobias Laundal",
   "module": "dist/ardoq-sdk-js.esm.js",
   "devDependencies": {
+    "@ardoq/shared-configs": "^0.0.4",
     "@types/jest": "^24.0.25",
     "@types/lodash": "^4.14.149",
     "husky": "^4.0.6",

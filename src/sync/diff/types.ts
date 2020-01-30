@@ -1,21 +1,45 @@
-import { LocalGraph, RemoteModel } from '..';
-import { mapValues } from 'lodash';
-import { Diff } from '.';
+import {
+  WorkspaceId,
+  LocalComponent,
+  RemoteComponent,
+  LocalReference,
+  RemoteReference,
+  SimpleField,
+} from '../types';
 
-type TypesDiff = Pick<Diff, 'componentTypes' | 'referenceTypes'>;
-
-export const diffTypes = (
-  model: RemoteModel,
-  { referenceTypes, componentTypes }: LocalGraph
-): TypesDiff => ({
-  componentTypes: mapValues(model.componentTypes, (model, workspace) => ({
-    new: (componentTypes[workspace] || []).filter(
-      compType => model[compType] === undefined
-    ),
-  })),
-  referenceTypes: mapValues(model.referenceTypes, (model, workspace) => ({
-    new: (referenceTypes[workspace] || []).filter(
-      refType => model[refType] === undefined
-    ),
-  })),
-});
+export type Diff<CF = {}, RF = {}> = {
+  components: Record<
+    WorkspaceId,
+    {
+      new: LocalComponent<CF>[];
+      updated: [RemoteComponent<CF>, LocalComponent<CF>][];
+      deleted: RemoteComponent<CF>[];
+    }
+  >;
+  references: Record<
+    WorkspaceId,
+    {
+      new: LocalReference<RF>[];
+      updated: [RemoteReference<RF>, LocalReference<RF>][];
+      deleted: RemoteReference<RF>[];
+    }
+  >;
+  referenceTypes: Record<
+    WorkspaceId,
+    {
+      new: string[];
+    }
+  >;
+  componentTypes: Record<
+    WorkspaceId,
+    {
+      new: string[];
+    }
+  >;
+  fields: Record<
+    WorkspaceId,
+    {
+      new: SimpleField[];
+    }
+  >;
+};

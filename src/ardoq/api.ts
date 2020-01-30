@@ -12,7 +12,7 @@ import {
 import { fetchArdoq } from './fetch';
 
 export const getFields = async (url: string, authToken: string, org: string) =>
-  await fetchArdoq<Field[]>(url + 'field', authToken, {
+  await fetchArdoq<Field[]>(`${url}field`, authToken, {
     org,
     includeCommon: 'true',
   });
@@ -22,7 +22,7 @@ export const createField = async (
   authToken: string,
   org: string,
   field: NewField
-) => await fetchArdoq<Field>(url + 'field', authToken, { org }, 'POST', field);
+) => await fetchArdoq<Field>(`${url}field`, authToken, { org }, 'POST', field);
 
 type Batched<T extends {}> = T & { batchId: string };
 type BatchResponse = {
@@ -38,7 +38,7 @@ export const batch = async (
   url: string,
   authToken: string,
   org: string,
-  batch: {
+  batchData: {
     op: 'create';
     options: {};
     data: {
@@ -48,11 +48,11 @@ export const batch = async (
   }
 ) =>
   await fetchArdoq<BatchResponse>(
-    url + 'batch',
+    `${url}batch`,
     authToken,
     { org },
     'POST',
-    batch
+    batchData
   );
 
 export const updateComponent = async (
@@ -62,7 +62,7 @@ export const updateComponent = async (
   component: Component
 ) =>
   await fetchArdoq<Component>(
-    url + 'component/' + component._id,
+    `${url}component/${component._id}`,
     authToken,
     { org },
     'PUT',
@@ -76,7 +76,7 @@ export const updateReference = async (
   reference: Reference
 ) =>
   await fetchArdoq<Reference>(
-    url + 'reference/' + reference._id,
+    `${url}reference/${reference._id}`,
     authToken,
     { org },
     'PUT',
@@ -100,7 +100,7 @@ export const bulkDeleteComponent = async (
   }
 ) =>
   await fetchArdoq<BulkDeleteResponse>(
-    url + 'component',
+    `${url}component`,
     authToken,
     { org },
     'DELETE',
@@ -115,7 +115,7 @@ export const deleteReference = async (
 ) =>
   await fetchArdoq(
     // TODO return type
-    url + 'reference/' + referenceId,
+    `${url}reference/${referenceId}`,
     authToken,
     { org },
     'DELETE'
@@ -128,7 +128,7 @@ export const getAggregatedWorkspace = async (
   workspaceId: AqId
 ) =>
   await fetchArdoq<AggregatedWorkspace>(
-    url + 'workspace/' + workspaceId + '/aggregated',
+    `${url}workspace/${workspaceId}/aggregated`,
     authToken,
     { org }
   );
@@ -139,7 +139,7 @@ export const getModel = async (
   org: string,
   modelId: AqId
 ) =>
-  await fetchArdoq<Model>(url + 'model/' + modelId, authToken, {
+  await fetchArdoq<Model>(`${url}model/${modelId}`, authToken, {
     org,
   });
 
@@ -150,7 +150,7 @@ export const updateModel = async (
   model: Model
 ) =>
   await fetchArdoq<Model>(
-    url + 'model/' + model._id,
+    `${url}model/${model._id}`,
     authToken,
     { org },
     'PUT',
