@@ -1,27 +1,135 @@
-# TSDX Bootstrap
+# Ardoq SDK JS
 
-This project was bootstrapped with [TSDX](https://github.com/jaredpalmer/tsdx).
+This is an, as of yet, small SDK for developing against the Ardoq API.
+It currently constist of two parts:
 
-## Local Development
+1.  The API - A set of functions corresponding to the API endpoints of Ardoq,
+    with correct typings
+2.  A graph syncer - A function that allows you to define a simple graph object
+    and update a set of workspaces in Ardoq to match this local graph
 
-Below is a list of commands you will probably find useful.
+## Usage
 
-### `npm start` or `yarn start`
+### The API
 
-Runs the project in development/watch mode. Your project will be rebuilt upon changes. TSDX has a special logger for you convenience. Error messages are pretty printed and formatted for compatibility VS Code's Problems tab.
+The following example demonstrates how to create a component with the api.
 
-<img src="https://user-images.githubusercontent.com/4060187/52168303-574d3a00-26f6-11e9-9f3b-71dbec9ebfcb.gif" width="600" />
+```typescript
+import { getAggregatedWorkspace, updateComponent } from 'ardoq-sdk-js';
 
-Your library will be rebuilt if you make edits.
+const apiProps = {
+  authToken: '<authentication token>',
+  org: 'my-org',
+  url: 'https://app.ardoq.com/api/',
+};
 
-### `npm run build` or `yarn build`
+const main = async () => {
+  const workspace = await getAggregatedWorkspace(apiProps, '<workspace id>');
+  for (const component of workspace.components) {
+    await updateComponent(apiProps, {
+      ...component,
+      description: (component.description || '') + '\nVisisted by script',
+    });
+  }
+};
 
-Bundles the package to the `dist` folder.
-The package is optimized and bundled with Rollup into multiple formats (CommonJS, UMD, and ES Module).
+main();
+```
 
-<img src="https://user-images.githubusercontent.com/4060187/52168322-a98e5b00-26f6-11e9-8cf6-222d716b75ef.gif" width="600" />
+### The Graph Syncer
 
-### `npm test` or `yarn test`
+The following example demonstrates most of the functionality of the graph
+syncer. Notice that the `sync` function will take care of creating the used
+types and fields. Fields can be changed locally, and will lead to the components
+remotely being updated as long as the `customId`s stay the same.
 
-Runs the test watcher (Jest) in an interactive mode.
-By default, runs tests related to files changed since the last commit.
+```typescript
+import { sync, FieldType } from "ardoq-sdk-js";
+
+const apiProps = {
+  authToken: "<authentication token>",
+  org: "my-org",
+  url: "https://app.ardoq.com/api/"
+};
+
+const fields = [
+  {
+    name: "excerciseValue",
+    label: "Excercise value",
+    type: FieldType.NUMBER
+  }
+];
+const workspaces = {
+  activities: "<workspace id>",
+  equipment: "<workspace id>",
+};
+const graph = {
+  components: [
+    {
+      customId: "walking",
+      workspace: "activities",
+      name: "Walking",
+      type: "Simple Activity",
+      fields: {
+        excerciseValue: 10
+      }
+    },
+    {
+      customId: "running",
+      workspace: "activites",
+      name: "Running",
+      type: "Simple Activity",
+      parent: 'walking',
+      fields: {
+         excerciseValue: 50
+      }
+    },
+    {
+      customId: "sailing",
+      workspace: "activites",
+      name: "Sailing",
+      type: "Complex Activity"
+      fields: {
+         excerciseValue: 15
+      }
+    },
+    {
+      customId: "dinghy",
+      workspace: "equipment",
+      name: "Dinghy",
+      type: "Equipment"
+    }
+  ],
+  references: [
+    {
+      customId: "sailing-uses-dinghy",
+      source: "sailing",
+      type: "Uses",
+      target: "dinghy",
+    },
+  ]
+};
+
+sync(apiProps, workspaces, graph, fields);
+```
+
+## Contributing
+
+There are a few things that could use some work:
+
+- Add more of the api endpoints
+- Write more tests for sync
+
+### Developing and testing
+
+- `yarn start` will start continous building (very nice to combine with
+  `yarn link` for live testing in another repo)
+- `yarn test --watch` will start continous testing
+
+### Cutting a new release
+
+1.  Make sure everything works: `yarn test`
+2.  Publish: `yarn deploy`
+    - **NB**: Make sure to follow schemantic versioning. As long as we are in
+      `0.x.x`, make sure to bump the minor version on any change that could break
+      existing code.
