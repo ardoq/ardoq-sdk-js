@@ -8,11 +8,10 @@ import {
 } from '../../ardoq/api';
 import { IdMap } from '../types';
 import { Diff } from '../diff/types';
+import { ApiProperties } from 'ardoq/types';
 
 export const consolidateGraph = async (
-  url: string,
-  authToken: string,
-  org: string,
+  apiProperties: ApiProperties,
   ids: IdMap,
   diff: Diff
 ) => {
@@ -43,7 +42,7 @@ export const consolidateGraph = async (
 
   let allCompIds = ids.components;
   if (newReferences.length !== 0 || newComponents.length !== 0) {
-    const created = await batch(url, authToken, org, {
+    const created = await batch(apiProperties, {
       op: 'create',
       options: {},
       data: {
@@ -58,7 +57,7 @@ export const consolidateGraph = async (
   const updateComponentsPromise = Promise.all(
     map(diff.components, ({ updated }, workspace) =>
       updated.map(([remote, local]) =>
-        updateComponent(url, authToken, org, {
+        updateComponent(apiProperties, {
           ...remote,
           name: local.name,
           description: local.description || null,
@@ -73,7 +72,7 @@ export const consolidateGraph = async (
   const updateReferencesPromise = Promise.all(
     map(diff.references, ({ updated }, workspace) =>
       updated.map(([remote, local]) =>
-        updateReference(url, authToken, org, {
+        updateReference(apiProperties, {
           ...remote,
           description: local.description || null,
           type: ids.refTypes[workspace][local.type],
@@ -91,7 +90,7 @@ export const consolidateGraph = async (
 
   let deletedReferencesSet = new Set();
   if (compIdsToDelete.length !== 0) {
-    const deleteComponents = await bulkDeleteComponent(url, authToken, org, {
+    const deleteComponents = await bulkDeleteComponent(apiProperties, {
       componentIds: compIdsToDelete,
     });
     deletedReferencesSet = new Set(deleteComponents.referenceIds);
@@ -101,7 +100,7 @@ export const consolidateGraph = async (
     map(diff.references, ({ deleted }) => map(deleted, '_id'))
       .flat()
       .filter(id => !deletedReferencesSet.has(id))
-      .map(id => deleteReference(url, authToken, org, id))
+      .map(id => deleteReference(apiProperties, id))
   );
 
   await updateComponentsPromise;

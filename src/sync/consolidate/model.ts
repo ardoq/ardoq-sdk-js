@@ -1,6 +1,6 @@
 import { WorkspaceId } from '../types';
 import { destruct, construct } from '../utils';
-import { Model, LineStyle, LineEnding } from '../../ardoq/types';
+import { Model, LineStyle, LineEnding, ApiProperties } from '../../ardoq/types';
 import { map } from 'lodash';
 import { updateModel } from '../../ardoq/api';
 import { Diff } from '../diff/types';
@@ -29,9 +29,7 @@ const randomCompTypeId = () =>
   `p${new Date().getTime() + Math.round(Math.random() * 10000)}`;
 
 export const consolidateTypes = (
-  url: string,
-  authToken: string,
-  org: string,
+  apiProperties: ApiProperties,
   model: Record<WorkspaceId, Model>,
   { referenceTypes, componentTypes }: Diff
 ) => {
@@ -77,7 +75,7 @@ export const consolidateTypes = (
         },
       };
 
-      const promise = updateModel(url, authToken, org, consolidatedModel);
+      const promise = updateModel(apiProperties, consolidatedModel);
 
       return {
         model: { ...acc.model, [workspace]: consolidatedModel },

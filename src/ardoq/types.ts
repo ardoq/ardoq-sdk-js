@@ -207,3 +207,9 @@ export type AggregatedWorkspace = WorkspaceBase & {
   components: Component[];
   references: Reference[];
 };
+
+export type ApiProperties = {
+  url: string;
+  authToken: string;
+  org: string;
+};

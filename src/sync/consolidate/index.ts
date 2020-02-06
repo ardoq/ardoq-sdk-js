@@ -1,4 +1,4 @@
-import { Model } from '../../ardoq/types';
+import { Model, ApiProperties } from '../../ardoq/types';
 import { collectCompTypes, collectRefTypes } from '../collectUtils';
 import { consolidateTypes } from './model';
 import { consolidateFields } from './fields';
@@ -8,21 +8,17 @@ import { Diff } from '../diff/types';
 import { WorkspaceId, IdMap } from '../types';
 
 export const consolidateDiff = async (
-  url: string,
-  authToken: string,
-  org: string,
+  apiProperties: ApiProperties,
   model: Record<WorkspaceId, Model>,
   diff: Diff,
   ids: IdMap
 ) => {
   const [consolidatedModel, typesPromise] = consolidateTypes(
-    url,
-    authToken,
-    org,
+    apiProperties,
     model,
     diff
   );
-  const fieldsPromise = consolidateFields(url, authToken, org, model, diff);
+  const fieldsPromise = consolidateFields(apiProperties, model, diff);
 
   const updatedIds = {
     ...ids,
@@ -35,6 +31,6 @@ export const consolidateDiff = async (
   };
 
   await typesPromise;
-  await consolidateGraph(url, authToken, org, updatedIds, diff);
+  await consolidateGraph(apiProperties, updatedIds, diff);
   await fieldsPromise;
 };

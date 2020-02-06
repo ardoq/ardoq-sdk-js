@@ -7,6 +7,7 @@ import {
   Reference,
   AggregatedWorkspace,
   FieldType,
+  ApiProperties,
 } from '../ardoq/types';
 import { getAggregatedWorkspace, getModel, getFields } from '../ardoq/api';
 import { calculateDiff } from './diff';
@@ -134,22 +135,20 @@ const buildIdMap = (
 });
 
 export const sync = async <CF, RF>(
-  authToken: string,
-  org: string,
+  apiProperties: ApiProperties,
   workspaces: Record<string, WorkspaceId>,
   graph: Graph<CF, RF>,
-  fields: SimpleField[] = [],
-  url = 'https://app.ardoq.com/api/'
+  fields: SimpleField[] = []
 ) => {
   const aqWorkspaces = await mapValuesAsync(workspaces, workspace =>
-    getAggregatedWorkspace(url, authToken, org, workspace)
+    getAggregatedWorkspace(apiProperties, workspace)
   );
 
   const aqModels = await mapValuesAsync(aqWorkspaces, workspace =>
-    getModel(url, authToken, org, workspace.componentModel)
+    getModel(apiProperties, workspace.componentModel)
   );
 
-  const aqFields = await getFields(url, authToken, org);
+  const aqFields = await getFields(apiProperties);
 
   // Create representations that are simpler to use. Lookup by workspace name and custom/local ids
   const localGraph = buildLocalGraph(graph);
@@ -163,5 +162,5 @@ export const sync = async <CF, RF>(
     ...REQUIRED_FIELDS,
   ]);
 
-  await consolidateDiff(url, authToken, org, aqModels, diff, ids);
+  await consolidateDiff(apiProperties, aqModels, diff, ids);
 };

@@ -8,19 +8,18 @@ import {
   NewComponent,
   NewReference,
   NewField,
+  ApiProperties,
 } from './types';
 import { fetchArdoq } from './fetch';
 
-export const getFields = async (url: string, authToken: string, org: string) =>
+export const getFields = async ({ url, authToken, org }: ApiProperties) =>
   await fetchArdoq<Field[]>(`${url}field`, authToken, {
     org,
     includeCommon: 'true',
   });
 
 export const createField = async (
-  url: string,
-  authToken: string,
-  org: string,
+  { url, authToken, org }: ApiProperties,
   field: NewField
 ) => await fetchArdoq<Field>(`${url}field`, authToken, { org }, 'POST', field);
 
@@ -35,9 +34,7 @@ type BatchResponse = {
 };
 
 export const batch = async (
-  url: string,
-  authToken: string,
-  org: string,
+  { url, authToken, org }: ApiProperties,
   batchData: {
     op: 'create';
     options: {};
@@ -56,9 +53,7 @@ export const batch = async (
   );
 
 export const updateComponent = async (
-  url: string,
-  authToken: string,
-  org: string,
+  { url, authToken, org }: ApiProperties,
   component: Component
 ) =>
   await fetchArdoq<Component>(
@@ -70,9 +65,7 @@ export const updateComponent = async (
   );
 
 export const updateReference = async (
-  url: string,
-  authToken: string,
-  org: string,
+  { url, authToken, org }: ApiProperties,
   reference: Reference
 ) =>
   await fetchArdoq<Reference>(
@@ -91,9 +84,7 @@ type BulkDeleteResponse = {
 };
 
 export const bulkDeleteComponent = async (
-  url: string,
-  authToken: string,
-  org: string,
+  { url, authToken, org }: ApiProperties,
   payload: {
     componentIds: AqId[];
     requestId?: string;
@@ -108,9 +99,7 @@ export const bulkDeleteComponent = async (
   );
 
 export const deleteReference = async (
-  url: string,
-  authToken: string,
-  org: string,
+  { url, authToken, org }: ApiProperties,
   referenceId: AqId
 ) =>
   await fetchArdoq(
@@ -122,9 +111,7 @@ export const deleteReference = async (
   );
 
 export const getAggregatedWorkspace = async (
-  url: string,
-  authToken: string,
-  org: string,
+  { url, authToken, org }: ApiProperties,
   workspaceId: AqId
 ) =>
   await fetchArdoq<AggregatedWorkspace>(
@@ -134,9 +121,7 @@ export const getAggregatedWorkspace = async (
   );
 
 export const getModel = async (
-  url: string,
-  authToken: string,
-  org: string,
+  { url, authToken, org }: ApiProperties,
   modelId: AqId
 ) =>
   await fetchArdoq<Model>(`${url}model/${modelId}`, authToken, {
@@ -144,9 +129,7 @@ export const getModel = async (
   });
 
 export const updateModel = async (
-  url: string,
-  authToken: string,
-  org: string,
+  { url, authToken, org }: ApiProperties,
   model: Model
 ) =>
   await fetchArdoq<Model>(
