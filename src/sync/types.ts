@@ -44,7 +44,8 @@ export type SimpleField = {
 
 export type LocalComponent<Fields> = SimpleComponent<Fields>;
 export type LocalReference<Fields> = SimpleReference<Fields> & {
-  workspace: WorkspaceId;
+  sourceWorkspace: WorkspaceId;
+  targetWorkspace: WorkspaceId;
 };
 export type LocalGraph<ComponentFields = {}, ReferenceFields = {}> = {
   components: Record<
@@ -77,5 +78,9 @@ export type IdMap = {
   refTypes: Record<WorkspaceId, Record<string, number>>;
   compTypes: Record<WorkspaceId, Record<string, string>>;
   components: Record<ComponentId, AqId>;
+  /**
+   * Mapping from custom component id to the remote id of the workspace defined
+   * in the local graph for the component.
+   */
   compWorkspaces: Record<ComponentId, AqId>;
 };

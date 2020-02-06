@@ -48,9 +48,10 @@ const buildLocalGraph = <CF, RF>(graph: Graph<CF, RF>): LocalGraph<CF, RF> => {
     group(
       graph.references.map(reference => ({
         ...reference,
-        workspace: cbyi[reference.source].workspace,
+        sourceWorkspace: cbyi[reference.source].workspace,
+        targetWorkspace: cbyi[reference.target].workspace,
       })),
-      'workspace'
+      'sourceWorkspace'
     ),
     wsReferences => pivot(wsReferences, 'customId')
   );

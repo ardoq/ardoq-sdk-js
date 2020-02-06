@@ -35,6 +35,7 @@ const hasComponentChanged = <Fields>(
 
 const hasReferenceChanged = <Fields>(
   remoteCompIds: Record<string, string>,
+  remoteCompWs: Record<string, string>,
   remoteRefTypes: Record<string, number>,
   local: LocalReference<Fields>,
   remote: RemoteReference<Fields>
@@ -47,6 +48,7 @@ const hasReferenceChanged = <Fields>(
 
   if (remoteCompIds[local.source] !== remote.source) return true;
   if (remoteCompIds[local.target] !== remote.target) return true;
+  if (remoteCompWs[local.target] !== remote.targetWorkspace) return true;
 
   if (!hasAllSameAttributes(local.fields, remote)) return true;
 
@@ -100,6 +102,7 @@ export const diffGraph = <CF, RF>(
         .filter(([remoteReference, local]) =>
           hasReferenceChanged(
             ids.components,
+            ids.compWorkspaces,
             ids.refTypes[workspace],
             local,
             remoteReference
