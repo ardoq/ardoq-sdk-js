@@ -8,7 +8,7 @@ import {
 } from '../../ardoq/api';
 import { IdMap } from '../types';
 import { Diff } from '../diff/types';
-import { ApiProperties } from 'ardoq/types';
+import { ApiProperties } from '../../ardoq/types';
 
 export const consolidateGraph = async (
   apiProperties: ApiProperties,
