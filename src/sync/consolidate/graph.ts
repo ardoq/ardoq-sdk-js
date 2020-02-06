@@ -54,35 +54,32 @@ export const consolidateGraph = async (
     allCompIds = { ...ids.components, ...created.components };
   }
 
-  const updateComponentsPromise = Promise.all(
-    map(diff.components, ({ updated }, workspace) =>
-      updated.map(([remote, local]) =>
-        updateComponent(apiProperties, {
-          ...remote,
-          name: local.name,
-          description: local.description || null,
-          typeId: ids.compTypes[workspace][local.type],
-          type: local.type,
-          parent: local.parent ? allCompIds[local.parent] : null,
-          ...local.fields,
-        })
-      )
-    ).flat()
-  );
-  const updateReferencesPromise = Promise.all(
-    map(diff.references, ({ updated }, workspace) =>
-      updated.map(([remote, local]) =>
-        updateReference(apiProperties, {
-          ...remote,
-          description: local.description || null,
-          type: ids.refTypes[workspace][local.type],
-          source: allCompIds[local.source],
-          target: allCompIds[local.target],
-          ...local.fields,
-        })
-      )
-    )
-  );
+  for (const workspace in diff.components) {
+    for (const [remote, local] of diff.components[workspace].updated) {
+      await updateComponent(apiProperties, {
+        ...remote,
+        name: local.name,
+        description: local.description || null,
+        typeId: ids.compTypes[workspace][local.type],
+        type: local.type,
+        parent: local.parent ? allCompIds[local.parent] : null,
+        ...local.fields,
+      });
+    }
+  }
+
+  for (const workspace in diff.references) {
+    for (const [remote, local] of diff.references[workspace].updated) {
+      await updateReference(apiProperties, {
+        ...remote,
+        description: local.description || null,
+        type: ids.refTypes[workspace][local.type],
+        source: allCompIds[local.source],
+        target: allCompIds[local.target],
+        ...local.fields,
+      });
+    }
+  }
 
   const compIdsToDelete = map(diff.components, ({ deleted }) =>
     map(deleted, '_id')
@@ -102,7 +99,4 @@ export const consolidateGraph = async (
       .filter(id => !deletedReferencesSet.has(id))
       .map(id => deleteReference(apiProperties, id))
   );
-
-  await updateComponentsPromise;
-  await updateReferencesPromise;
 };
