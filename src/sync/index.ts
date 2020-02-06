@@ -6,7 +6,6 @@ import {
   Component,
   Reference,
   AggregatedWorkspace,
-  FieldType,
   ApiProperties,
 } from '../ardoq/types';
 import { getAggregatedWorkspace, getModel, getFields } from '../ardoq/api';
@@ -24,6 +23,7 @@ import {
   IdMap,
 } from './types';
 import { collectRefTypes, collectCompTypes } from './collectUtils';
+import { FieldType } from '../ardoq/enums';
 
 /*
  * Sync a simple graph to Ardoq

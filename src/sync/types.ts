@@ -1,5 +1,4 @@
 import {
-  FieldType,
   LispyString,
   Component,
   Reference,
@@ -7,7 +6,8 @@ import {
   ModelComponent,
   Field,
   AqId,
-} from 'ardoq/types';
+} from '../ardoq/types';
+import { FieldType } from '../ardoq/enums';
 
 export type WorkspaceId = string;
 type ComponentId = string;

@@ -1,3 +1,14 @@
+import {
+  FieldType,
+  EntityType,
+  Color,
+  Shape,
+  Icon,
+  LineStyle,
+  LineEnding,
+  ModelCategory,
+} from './enums';
+
 export type OptionalExcept<T, K extends keyof T> = Pick<T, K> & Partial<T>;
 export type LispyString = string;
 export type AqId = string;
@@ -15,46 +26,6 @@ export type Persisted = {
   lastModifiedByName: string;
 };
 
-export enum FieldType {
-  TEXT = 'Text',
-  CHECKBOX = 'Checkbox',
-  LIST = 'List',
-  URL = 'Url',
-  NUMBER = 'Number',
-  TEXT_AREA = 'TextArea',
-  EMAIL = 'Email',
-  USER = 'User',
-  DATE_TIME = 'DateTime',
-  SELECT_MULTIPLE_LIST = 'SelectMultipleList',
-}
-
-// The below enums are not exhaustive
-export enum Color {
-  BLUE = 'blue',
-  BLACK = 'black',
-}
-export enum Icon {
-  STAR = 'star',
-}
-export enum LineEnding {
-  BOTH = 'both',
-  NONE = 'none',
-}
-export enum LineStyle {
-  SOLID = 'solid',
-}
-export enum ModelCategory {
-  OTHER = 'other',
-}
-export enum EntityType {
-  COMPONENT = 'component',
-  REFERENCE = 'reference',
-  FIELD = 'field',
-  MODEL = 'model',
-}
-export enum Shape {
-  DECISION = 'decision',
-}
 export type Origin = unknown;
 
 type MinimalField = {
@@ -93,10 +64,10 @@ type MinimalReference = {
 };
 export type Reference = MinimalReference &
   Persisted & {
-    order: number;
     ardoq: {
       'entity-type': EntityType.REFERENCE;
     };
+    order?: number;
     displayText?: string | null;
     description?: string | null;
     returnValue?: string | null;

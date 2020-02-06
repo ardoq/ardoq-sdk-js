@@ -1,9 +1,10 @@
 import { WorkspaceId } from '../types';
 import { destruct, construct } from '../utils';
-import { Model, LineStyle, LineEnding, ApiProperties } from '../../ardoq/types';
+import { Model, ApiProperties } from '../../ardoq/types';
 import { map } from 'lodash';
 import { updateModel } from '../../ardoq/api';
 import { Diff } from '../diff/types';
+import { LineStyle, LineEnding } from '../../ardoq/enums';
 
 const REFERENCE_TYPE_DEFAULTS = {
   line: LineStyle.SOLID,
