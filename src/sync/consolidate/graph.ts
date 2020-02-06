@@ -37,6 +37,7 @@ export const consolidateGraph = async (
       description: comp.description || null,
       name: comp.name,
       parent: comp.parent ? ids.components[comp.parent] : null,
+      ...comp.fields,
     }))
   ).flat();
 
