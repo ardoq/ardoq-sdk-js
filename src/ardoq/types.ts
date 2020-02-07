@@ -179,8 +179,28 @@ export type AggregatedWorkspace = WorkspaceBase & {
   references: Reference[];
 };
 
+/**
+ * Properties for connecting to the Ardoq API
+ */
 export type ApiProperties = {
+  /**
+   * The URL to connect to. Must use custom domain if the organization has a
+   * custom domain.
+   *
+   * Usually: `https://app.ardoq.com/api/`
+   */
   url: string;
+  /**
+   * Authentication token for the API.
+   *
+   * Can be generated in Ardoq under Account Preferences and "API and Tokens".
+   */
   authToken: string;
+  /**
+   * The organization slug to use.
+   *
+   * Can be found under Organization Preferences and "Settings", in the
+   * immutable field "Label"
+   */
   org: string;
 };

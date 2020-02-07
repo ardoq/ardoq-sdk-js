@@ -117,6 +117,7 @@ sync(apiProps, workspaces, graph, fields);
 
 There are a few things that could use some work:
 
+- Verify the validity of the graph before attempting sync
 - Add more of the api endpoints
 - Write more tests for sync
 

@@ -11,7 +11,7 @@ export enum FieldType {
   SELECT_MULTIPLE_LIST = 'SelectMultipleList',
 }
 
-// The below enums are not exhaustive
+// The below enums are not necessarily exhaustive
 export enum Color {
   BLUE = 'blue',
   BLACK = 'black',

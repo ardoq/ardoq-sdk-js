@@ -135,6 +135,47 @@ const buildIdMap = (
   ),
 });
 
+/**
+ * Synchronize workspaces in Ardoq to match the provided graph.
+ *
+ * Example:
+ *
+ *    sync(apiProps, { concepts: "<workspace id>" }, {
+ *        components: [
+ *          {
+ *            customId: "recursion",
+ *            workspace: "concepts",
+ *            name: "Recursion",
+ *            type: "Concept",
+ *            fields: {
+ *              complexity: 13
+ *            }
+ *          }
+ *        ],
+ *        references: [
+ *          {
+ *            customId: "recursion",
+ *            source: "recursion",
+ *            type: "is",
+ *            target: "recursion",
+ *          },
+ *        ]
+ *      }, [ {
+ *        name: "complexity",
+ *        label: "Complexity",
+ *        type: FieldType.NUMBER
+ *      } ]);
+ *
+ *
+ * @param apiProperties API properties; URL, authentication and organization
+ * @param workspaces Mapping from colloquial workspace names to their ids in
+ *                   Ardoq
+ * @param graph A description of how the components and references in the remote
+ *              workspaces should look
+ * @param fields Field definitions used in the graph. These are not required to
+ *               push and pull custom fields, but without them the fields wont
+ *               show up in Ardoq
+ */
 export const sync = async <CF, RF>(
   apiProperties: ApiProperties,
   workspaces: Record<string, WorkspaceId>,
