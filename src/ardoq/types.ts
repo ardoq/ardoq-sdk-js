@@ -10,16 +10,34 @@ import {
 } from './enums';
 
 export type OptionalExcept<T, K extends keyof T> = Pick<T, K> & Partial<T>;
-export type LispyString = string;
-export type AqId = string;
+
+export type AqComponentId = string;
+export type AqReferenceId = string;
+export type AqUserId = string;
+export type AqModelId = string;
+export type AqWorkspaceId = string;
+export type AqId =
+  | AqComponentId
+  | AqReferenceId
+  | AqUserId
+  | AqModelId
+  | AqWorkspaceId;
+
+export type AqFieldName = string;
+export type AqComponentTypeName = string;
+export type AqComponentTypeId = string; // `p` followed by a many-digit number
+export type AqReferenceTypeName = string;
+export type AqReferenceTypeId = number;
+
 export type SvgStyle = string;
+
 export type Persisted = {
   _id: AqId;
   _version: number;
   created: string;
   'last-updated': string;
-  'created-by': AqId;
-  'last-modified-by': AqId;
+  'created-by': AqUserId;
+  'last-modified-by': AqUserId;
   createdByName: string;
   createdByEmail: string;
   lastModifiedByEmail: string;
@@ -31,18 +49,18 @@ export type Origin = unknown;
 type MinimalField = {
   type: FieldType;
   label: string;
-  model: AqId;
+  model: AqModelId;
 };
 export type Field = MinimalField &
   Persisted & {
     description: string | null;
-    name: LispyString;
+    name: AqFieldName;
     defaultValue: null | string | number | boolean;
     ardoq: {
       'entity-type': EntityType.FIELD;
     };
-    componentType?: AqId[];
-    referenceType?: AqId[];
+    componentType?: AqComponentId[];
+    referenceType?: AqReferenceId[];
     mustBeSaved?: boolean;
     origin?: Origin;
     required?: boolean;
@@ -56,11 +74,11 @@ export type Field = MinimalField &
 export type NewField = OptionalExcept<Field, keyof MinimalField>;
 
 type MinimalReference = {
-  type: number;
-  rootWorkspace: AqId;
-  targetWorkspace: AqId;
-  source: AqId;
-  target: AqId;
+  type: AqReferenceTypeId;
+  rootWorkspace: AqWorkspaceId;
+  targetWorkspace: AqWorkspaceId;
+  source: AqComponentId;
+  target: AqComponentId;
 };
 export type Reference = MinimalReference &
   Persisted & {
@@ -77,7 +95,7 @@ export type Reference = MinimalReference &
 export type NewReference = OptionalExcept<Reference, keyof MinimalReference>;
 
 type MinimalComponent = {
-  rootWorkspace: AqId;
+  rootWorkspace: AqWorkspaceId;
   description: string | null;
   name: string;
 };
@@ -85,11 +103,11 @@ export type Component = MinimalComponent &
   Persisted & {
     _order: number;
     'component-key': string;
-    children: AqId[];
-    parent: AqId | null;
-    model: AqId;
-    type: string;
-    typeId: AqId;
+    children: AqComponentId[];
+    parent: AqComponentId | null;
+    model: AqModelId;
+    type: AqComponentTypeName;
+    typeId: AqComponentTypeId;
     ardoq: {
       'entity-type': EntityType.COMPONENT;
       persistent: null | {
@@ -113,13 +131,13 @@ export type Component = MinimalComponent &
   };
 export type NewComponent = OptionalExcept<Component, keyof MinimalComponent>;
 
-export type ModelComponent = {
-  id: string;
+export type ComponentType = {
+  id: AqComponentTypeId;
   index: number;
-  name: string;
+  name: AqComponentTypeName;
   level: number;
   children: {
-    [componentTypeId: string]: ModelComponent;
+    [componentTypeId: string]: ComponentType;
   };
   returnsValue: boolean | null;
   color: Color | null;
@@ -128,9 +146,9 @@ export type ModelComponent = {
   image: string | null;
   standard: string | null;
 };
-export type ModelReference = {
-  id: number;
-  name: string;
+export type ReferenceType = {
+  id: AqReferenceTypeId;
+  name: AqReferenceTypeName;
   line: LineStyle; // TODO - really not nullable?
   lineEnding: LineEnding; // TODO - really not nullable?
   returnsValue: boolean | null;
@@ -143,10 +161,12 @@ type MinimalModel = {
   category: ModelCategory;
   flexible: boolean;
   root: {
-    [componentTypeId: string]: ModelComponent;
+    [componentTypeId: string]: ComponentType;
   };
   referenceTypes: {
-    [referenceTypeId: string]: ModelReference;
+    // Unsure if the key should be number and whether it makes a difference.
+    // The key will be a number, but JS will "cast" it to a string.
+    [referenceTypeId: string]: ReferenceType;
   };
   blankTemplate: boolean;
   useAsTemplate: boolean;
@@ -155,7 +175,7 @@ type MinimalModel = {
 };
 export type Model = MinimalModel &
   Persisted & {
-    createdFromTemplate?: AqId;
+    createdFromTemplate?: AqModelId;
     ardoq: {
       'entity-type': EntityType.MODEL;
     };
@@ -168,11 +188,11 @@ export type WorkspaceBase = {
   type: '1';
   name: string;
   description: string;
-  componentModel: AqId;
+  componentModel: AqModelId;
 };
 export type Workspace = WorkspaceBase & {
-  references: AqId[];
-  components: AqId[];
+  references: AqReferenceId[];
+  components: AqComponentId[];
 };
 export type AggregatedWorkspace = WorkspaceBase & {
   components: Component[];

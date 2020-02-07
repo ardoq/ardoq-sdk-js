@@ -5,11 +5,12 @@ import { consolidateFields } from './fields';
 import { mapValues } from 'lodash';
 import { consolidateGraph } from './graph';
 import { Diff } from '../diff/types';
-import { WorkspaceId, IdMap } from '../types';
+import { IdMap } from '../types';
+import { WorkspaceName } from '../simpleGraph';
 
 export const consolidateDiff = async (
   apiProperties: ApiProperties,
-  model: Record<WorkspaceId, Model>,
+  model: Record<WorkspaceName, Model>,
   diff: Diff,
   ids: IdMap
 ) => {

@@ -1,15 +1,22 @@
 import { map, reduce } from 'lodash';
-import { ModelReference, ModelComponent } from '../ardoq/types';
+import {
+  ReferenceType,
+  ComponentType,
+  AqReferenceTypeName,
+  AqReferenceTypeId,
+  AqComponentTypeName,
+  AqComponentTypeId,
+} from '../ardoq/types';
 import { construct } from './utils';
 
 export const collectRefTypes = (
-  refTypes: Record<string, ModelReference>
-): Record<string, number> =>
+  refTypes: Record<AqReferenceTypeName, ReferenceType>
+): Record<AqReferenceTypeName, AqReferenceTypeId> =>
   construct(map(refTypes, ({ name, id }) => [name, id]));
 
 export function collectCompTypes(
-  compTypes: Record<string, ModelComponent>
-): Record<string, string> {
+  compTypes: Record<AqComponentTypeName, ComponentType>
+): Record<AqComponentTypeName, AqComponentTypeId> {
   return reduce(
     compTypes,
     (acc, comp) => ({

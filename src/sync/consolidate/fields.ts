@@ -1,12 +1,12 @@
 import { destruct } from '../utils';
 import { createField } from '../../ardoq/api';
 import { Model, ApiProperties } from '../../ardoq/types';
-import { WorkspaceId } from '../types';
 import { Diff } from '../diff/types';
+import { WorkspaceName } from '../simpleGraph';
 
 export const consolidateFields = async (
   apiProperties: ApiProperties,
-  model: Record<WorkspaceId, Model>,
+  model: Record<WorkspaceName, Model>,
   { fields }: Diff
 ) =>
   await Promise.all(

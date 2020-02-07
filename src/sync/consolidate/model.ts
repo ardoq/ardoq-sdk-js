@@ -1,10 +1,10 @@
-import { WorkspaceId } from '../types';
 import { destruct, construct } from '../utils';
 import { Model, ApiProperties } from '../../ardoq/types';
 import { map } from 'lodash';
 import { updateModel } from '../../ardoq/api';
 import { Diff } from '../diff/types';
 import { LineStyle, LineEnding } from '../../ardoq/enums';
+import { WorkspaceName } from '../simpleGraph';
 
 const REFERENCE_TYPE_DEFAULTS = {
   line: LineStyle.SOLID,
@@ -31,7 +31,7 @@ const randomCompTypeId = () =>
 
 export const consolidateTypes = (
   apiProperties: ApiProperties,
-  model: Record<WorkspaceId, Model>,
+  model: Record<WorkspaceName, Model>,
   { referenceTypes, componentTypes }: Diff
 ) => {
   const { model: newModel, promises } = destruct(model).reduce(
@@ -84,7 +84,7 @@ export const consolidateTypes = (
       };
     },
     {
-      model: {} as Record<WorkspaceId, Model>,
+      model: {} as Record<WorkspaceName, Model>,
       promises: [] as Promise<unknown>[],
     }
   );

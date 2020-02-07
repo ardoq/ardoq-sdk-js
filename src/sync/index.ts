@@ -7,27 +7,22 @@ import {
   Reference,
   AggregatedWorkspace,
   ApiProperties,
+  AqWorkspaceId,
 } from '../ardoq/types';
 import { getAggregatedWorkspace, getModel, getFields } from '../ardoq/api';
 import { calculateDiff } from './diff';
 import { consolidateDiff } from './consolidate';
 import {
-  SimpleField,
-  Graph,
   LocalGraph,
-  WorkspaceId,
   RemoteModel,
   RemoteGraph,
   RemoteComponent,
   RemoteReference,
   IdMap,
 } from './types';
+import { SimpleField, Graph, WorkspaceName } from './simpleGraph';
 import { collectRefTypes, collectCompTypes } from './collectUtils';
 import { FieldType } from '../ardoq/enums';
-
-/*
- * Sync a simple graph to Ardoq
- */
 
 const REQUIRED_FIELDS: SimpleField[] = [
   {
@@ -66,7 +61,7 @@ const buildLocalGraph = <CF, RF>(graph: Graph<CF, RF>): LocalGraph<CF, RF> => {
 };
 
 const buildRemoteModel = (
-  model: Record<WorkspaceId, Model>,
+  model: Record<WorkspaceName, Model>,
   fields: Field[]
 ): RemoteModel => {
   const fieldsByModel = group(fields, 'model');
@@ -82,7 +77,7 @@ const buildRemoteModel = (
 };
 
 const buildRemoteGraph = <CF, RF>(
-  workspaces: Record<WorkspaceId, AggregatedWorkspace>
+  workspaces: Record<WorkspaceName, AggregatedWorkspace>
 ): RemoteGraph<Partial<CF>, Partial<RF>> => ({
   components: mapValues(workspaces, workspace =>
     pivot(
@@ -99,7 +94,7 @@ const buildRemoteGraph = <CF, RF>(
 });
 
 const buildIdMap = (
-  workspaces: Record<string, WorkspaceId>,
+  workspaces: Record<WorkspaceName, AqWorkspaceId>,
   model: RemoteModel,
   local: LocalGraph,
   remote: RemoteGraph
@@ -178,7 +173,7 @@ const buildIdMap = (
  */
 export const sync = async <CF, RF>(
   apiProperties: ApiProperties,
-  workspaces: Record<string, WorkspaceId>,
+  workspaces: Record<WorkspaceName, AqWorkspaceId>,
   graph: Graph<CF, RF>,
   fields: SimpleField[] = []
 ) => {

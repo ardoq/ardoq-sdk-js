@@ -1,15 +1,14 @@
 import {
-  WorkspaceId,
   LocalComponent,
   RemoteComponent,
   LocalReference,
   RemoteReference,
-  SimpleField,
 } from '../types';
+import { SimpleField, WorkspaceName } from '../simpleGraph';
 
 export type Diff<CF = {}, RF = {}> = {
   components: Record<
-    WorkspaceId,
+    WorkspaceName,
     {
       new: LocalComponent<CF>[];
       updated: [RemoteComponent<CF>, LocalComponent<CF>][];
@@ -17,7 +16,7 @@ export type Diff<CF = {}, RF = {}> = {
     }
   >;
   references: Record<
-    WorkspaceId,
+    WorkspaceName,
     {
       new: LocalReference<RF>[];
       updated: [RemoteReference<RF>, LocalReference<RF>][];
@@ -25,19 +24,19 @@ export type Diff<CF = {}, RF = {}> = {
     }
   >;
   referenceTypes: Record<
-    WorkspaceId,
+    WorkspaceName,
     {
       new: string[];
     }
   >;
   componentTypes: Record<
-    WorkspaceId,
+    WorkspaceName,
     {
       new: string[];
     }
   >;
   fields: Record<
-    WorkspaceId,
+    WorkspaceName,
     {
       new: SimpleField[];
     }

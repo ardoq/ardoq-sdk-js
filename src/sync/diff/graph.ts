@@ -10,9 +10,16 @@ import {
 import { hasAllSameAttributes, setIntersection, setDifference } from '../utils';
 import { mapValues, keys } from 'lodash';
 import { Diff } from './types';
+import { CustomComponentId } from '../simpleGraph';
+import {
+  AqComponentId,
+  AqWorkspaceId,
+  AqReferenceTypeName,
+  AqReferenceTypeId,
+} from '../../ardoq/types';
 
 const hasComponentChanged = <Fields>(
-  remoteCompIds: Record<string, string>,
+  remoteCompIds: Record<CustomComponentId, AqComponentId>,
   local: LocalComponent<Fields>,
   remote: RemoteComponent<Fields>
 ) => {
@@ -34,9 +41,9 @@ const hasComponentChanged = <Fields>(
 };
 
 const hasReferenceChanged = <Fields>(
-  remoteCompIds: Record<string, string>,
-  remoteCompWs: Record<string, string>,
-  remoteRefTypes: Record<string, number>,
+  remoteCompIds: Record<CustomComponentId, AqComponentId>,
+  remoteCompWs: Record<CustomComponentId, AqWorkspaceId>,
+  remoteRefTypes: Record<AqReferenceTypeName, AqReferenceTypeId>,
   local: LocalReference<Fields>,
   remote: RemoteReference<Fields>
 ) => {

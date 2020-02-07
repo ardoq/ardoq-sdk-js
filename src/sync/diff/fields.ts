@@ -1,5 +1,6 @@
 import { mapValues } from 'lodash';
-import { RemoteModel, SimpleField } from '../types';
+import { RemoteModel } from '../types';
+import { SimpleField } from '../simpleGraph';
 import { Diff } from './types';
 
 export const diffFields = (
