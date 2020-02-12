@@ -4,10 +4,9 @@ import {
   RemoteComponent,
   RemoteReference,
   LocalGraph,
-  SimpleComponent,
   LocalReference,
 } from '../../../src/sync/types';
-import { EntityType } from '../../../src';
+import { EntityType, SimpleComponent } from '../../../src';
 import { diffGraph } from '../../../src/sync/diff/graph';
 import { merge } from 'lodash';
 
