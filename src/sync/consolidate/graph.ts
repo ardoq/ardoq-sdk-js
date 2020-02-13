@@ -94,10 +94,10 @@ export const consolidateGraph = async (
     deletedReferencesSet = new Set(deleteComponents.referenceIds);
   }
 
-  await Promise.all(
-    map(diff.references, ({ deleted }) => map(deleted, '_id'))
-      .flat()
-      .filter(id => !deletedReferencesSet.has(id))
-      .map(id => deleteReference(apiProperties, id))
-  );
+  for (const { deleted } of Object.values(diff.references)) {
+    for (const { _id } of deleted) {
+      if (deletedReferencesSet.has(_id)) continue;
+      await deleteReference(apiProperties, _id);
+    }
+  }
 };

@@ -14,12 +14,8 @@ export const consolidateDiff = async (
   diff: Diff,
   ids: IdMap
 ) => {
-  const [consolidatedModel, typesPromise] = consolidateTypes(
-    apiProperties,
-    model,
-    diff
-  );
-  const fieldsPromise = consolidateFields(apiProperties, model, diff);
+  const consolidatedModel = await consolidateTypes(apiProperties, model, diff);
+  await consolidateFields(apiProperties, model, diff);
 
   const updatedIds = {
     ...ids,
@@ -31,7 +27,5 @@ export const consolidateDiff = async (
     ),
   };
 
-  await typesPromise;
   await consolidateGraph(apiProperties, updatedIds, diff);
-  await fieldsPromise;
 };

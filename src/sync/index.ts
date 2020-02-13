@@ -1,5 +1,5 @@
 import { map, mapValues, mapKeys } from 'lodash';
-import { pivot, group, unique, mapValuesAsync, construct } from './utils';
+import { pivot, group, unique, construct } from './utils';
 import {
   Field,
   Model,
@@ -177,13 +177,15 @@ export const sync = async <CF, RF>(
   graph: Graph<CF, RF>,
   fields: SimpleField[] = []
 ) => {
-  const aqWorkspaces = await mapValuesAsync(workspaces, workspace =>
-    getAggregatedWorkspace(apiProperties, workspace)
-  );
+  const aqWorkspaces: Record<string, AggregatedWorkspace> = {};
+  for (const [name, id] of Object.entries(workspaces)) {
+    aqWorkspaces[name] = await getAggregatedWorkspace(apiProperties, id);
+  }
 
-  const aqModels = await mapValuesAsync(aqWorkspaces, workspace =>
-    getModel(apiProperties, workspace.componentModel)
-  );
+  const aqModels: Record<string, Model> = {};
+  for (const [name, workspace] of Object.entries(aqWorkspaces)) {
+    aqModels[name] = await getModel(apiProperties, workspace.componentModel);
+  }
 
   const aqFields = await getFields(apiProperties);
 
