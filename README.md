@@ -8,6 +8,9 @@ It currently constist of two parts:
 2.  A graph syncer - A function that allows you to define a simple graph object
     and update a set of workspaces in Ardoq to match this local graph
 
+Please [open an issue](https://github.com/ardoq/ardoq-sdk-js/issues/new) if
+there is any functionality you are missing, or if you find any bugs.
+
 ## Usage
 
 ### The API
