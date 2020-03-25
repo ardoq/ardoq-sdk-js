@@ -133,7 +133,7 @@ There are a few things that could use some work:
 ### Cutting a new release
 
 1.  Make sure everything works: `yarn test`
-2.  Publish: `yarn deploy`
+2.  Publish: `yarn publish`
     - **NB**: Make sure to follow schemantic versioning. As long as we are in
       `0.x.x`, make sure to bump the minor version on any change that could break
       existing code.
