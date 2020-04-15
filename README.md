@@ -79,7 +79,7 @@ const graph = {
     },
     {
       customId: "running",
-      workspace: "activites",
+      workspace: "activities",
       name: "Running",
       type: "Simple Activity",
       parent: 'walking',
@@ -89,7 +89,7 @@ const graph = {
     },
     {
       customId: "sailing",
-      workspace: "activites",
+      workspace: "activities",
       name: "Sailing",
       type: "Complex Activity"
       fields: {
