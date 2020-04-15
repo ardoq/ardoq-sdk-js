@@ -91,7 +91,7 @@ const graph = {
       customId: "sailing",
       workspace: "activities",
       name: "Sailing",
-      type: "Complex Activity"
+      type: "Complex Activity",
       fields: {
          excerciseValue: 15
       }
