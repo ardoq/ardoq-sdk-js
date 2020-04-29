@@ -13,6 +13,8 @@ there is any functionality you are missing, or if you find any bugs.
 
 ## Usage
 
+For complete usage examples, please see our [repo with examples](https://github.com/ardoq/ardoq-sync-examples).
+
 ### The API
 
 The following example demonstrates how to create a component with the api.
