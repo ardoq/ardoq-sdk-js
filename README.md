@@ -13,6 +13,8 @@ there is any functionality you are missing, or if you find any bugs.
 
 ## Usage
 
+For complete usage examples, please see our [repo with examples](https://github.com/ardoq/ardoq-sync-examples).
+
 ### The API
 
 The following example demonstrates how to create a component with the api.
@@ -79,7 +81,7 @@ const graph = {
     },
     {
       customId: "running",
-      workspace: "activites",
+      workspace: "activities",
       name: "Running",
       type: "Simple Activity",
       parent: 'walking',
@@ -89,9 +91,9 @@ const graph = {
     },
     {
       customId: "sailing",
-      workspace: "activites",
+      workspace: "activities",
       name: "Sailing",
-      type: "Complex Activity"
+      type: "Complex Activity",
       fields: {
          excerciseValue: 15
       }
