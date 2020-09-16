@@ -23,7 +23,7 @@ export const createField = async (
   field: NewField
 ) => await fetchArdoq<Field>(`${url}field`, authToken, { org }, 'POST', field);
 
-type Batched<T extends {}> = T & { batchId: string };
+type Batched<T> = T & { batchId: string };
 type BatchResponse = {
   components: {
     [batchId: string]: AqId;
@@ -37,7 +37,7 @@ export const batch = async (
   { url, authToken, org }: ApiProperties,
   batchData: {
     op: 'create';
-    options: {};
+    options: Record<string, unknown>;
     data: {
       references: Batched<NewReference>[];
       components: Batched<NewComponent>[];

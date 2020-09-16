@@ -19,10 +19,10 @@ export const consolidateDiff = async (
 
   const updatedIds = {
     ...ids,
-    compTypes: mapValues(consolidatedModel, wsModel =>
+    compTypes: mapValues(consolidatedModel, (wsModel) =>
       collectCompTypes(wsModel.root)
     ),
-    refTypes: mapValues(consolidatedModel, wsModel =>
+    refTypes: mapValues(consolidatedModel, (wsModel) =>
       collectRefTypes(wsModel.referenceTypes)
     ),
   };

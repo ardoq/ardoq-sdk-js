@@ -66,7 +66,7 @@ export const consolidateTypes = async (
       root: {
         ...wsModel.root,
         ...construct(
-          newCompTypes.map(name => {
+          newCompTypes.map((name) => {
             const id = randomCompTypeId();
             const compType = { ...COMPONENT_TYPE_DEFAULTS, id, name };
             return [id, compType];

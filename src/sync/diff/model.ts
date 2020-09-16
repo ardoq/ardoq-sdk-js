@@ -12,7 +12,7 @@ export const diffTypes = (
     model.componentTypes,
     (modelComponents, workspace) => ({
       new: (componentTypes[workspace] || []).filter(
-        compType => modelComponents[compType] === undefined
+        (compType) => modelComponents[compType] === undefined
       ),
     })
   ),
@@ -20,7 +20,7 @@ export const diffTypes = (
     model.referenceTypes,
     (modelReferences, workspace) => ({
       new: (referenceTypes[workspace] || []).filter(
-        refType => modelReferences[refType] === undefined
+        (refType) => modelReferences[refType] === undefined
       ),
     })
   ),

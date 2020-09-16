@@ -16,7 +16,7 @@ export const consolidateGraph = async (
   diff: Diff
 ) => {
   const newReferences = map(diff.references, (wsDiff, workspace) =>
-    wsDiff.new.map(ref => ({
+    wsDiff.new.map((ref) => ({
       batchId: ref.customId,
       customId: ref.customId,
       rootWorkspace: ids.compWorkspaces[ref.source],
@@ -29,7 +29,7 @@ export const consolidateGraph = async (
     }))
   ).flat();
   const newComponents = map(diff.components, (wsDiff, workspace) =>
-    wsDiff.new.map(comp => ({
+    wsDiff.new.map((comp) => ({
       batchId: comp.customId,
       customId: comp.customId,
       rootWorkspace: ids.compWorkspaces[comp.customId],

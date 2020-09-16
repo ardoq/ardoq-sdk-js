@@ -6,7 +6,7 @@ import {
 } from '../types';
 import { SimpleField, WorkspaceName } from '../simpleGraph';
 
-export type Diff<CF = {}, RF = {}> = {
+export type Diff<CF = Record<string, unknown>, RF = Record<string, unknown>> = {
   components: Record<
     WorkspaceName,
     {

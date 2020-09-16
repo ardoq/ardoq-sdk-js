@@ -62,7 +62,10 @@ const hasReferenceChanged = <Fields>(
   return false;
 };
 
-export const diffGraph = <CF, RF>(
+export const diffGraph = <
+  CF extends Record<string, unknown>,
+  RF extends Record<string, unknown>
+>(
   ids: IdMap,
   remoteGraph: RemoteGraph<CF, RF>,
   localGraph: LocalGraph<CF, RF>
@@ -72,11 +75,11 @@ export const diffGraph = <CF, RF>(
       new: setDifference(
         keys(localGraph.components[workspace]),
         keys(remote)
-      ).map(component => localGraph.components[workspace][component]),
+      ).map((component) => localGraph.components[workspace][component]),
       deleted: setDifference(
         keys(remote),
         keys(localGraph.components[workspace])
-      ).map(component => remote[component]),
+      ).map((component) => remote[component]),
       updated: setIntersection(
         keys(remote),
         keys(localGraph.components[workspace])
@@ -93,11 +96,11 @@ export const diffGraph = <CF, RF>(
       new: setDifference(
         keys(localGraph.references[workspace]),
         keys(remote)
-      ).map(reference => localGraph.references[workspace][reference]),
+      ).map((reference) => localGraph.references[workspace][reference]),
       deleted: setDifference(
         keys(remote),
         keys(localGraph.references[workspace])
-      ).map(reference => remote[reference]),
+      ).map((reference) => remote[reference]),
       updated: setIntersection(
         keys(remote),
         keys(localGraph.references[workspace])

@@ -37,23 +37,23 @@ const buildLocalGraph = <CF, RF>(graph: Graph<CF, RF>): LocalGraph<CF, RF> => {
   const cbyi = pivot(graph.components, 'customId');
   const components = mapValues(
     group(graph.components, 'workspace'),
-    wsComponents => pivot(wsComponents, 'customId')
+    (wsComponents) => pivot(wsComponents, 'customId')
   );
   const references = mapValues(
     group(
-      graph.references.map(reference => ({
+      graph.references.map((reference) => ({
         ...reference,
         sourceWorkspace: cbyi[reference.source].workspace,
         targetWorkspace: cbyi[reference.target].workspace,
       })),
       'sourceWorkspace'
     ),
-    wsReferences => pivot(wsReferences, 'customId')
+    (wsReferences) => pivot(wsReferences, 'customId')
   );
-  const componentTypes = mapValues(components, wsComponents =>
+  const componentTypes = mapValues(components, (wsComponents) =>
     unique(map(wsComponents, 'type'))
   );
-  const referenceTypes = mapValues(references, wsReferences =>
+  const referenceTypes = mapValues(references, (wsReferences) =>
     unique(map(wsReferences, 'type'))
   );
 
@@ -66,11 +66,13 @@ const buildRemoteModel = (
 ): RemoteModel => {
   const fieldsByModel = group(fields, 'model');
   return {
-    referenceTypes: mapValues(model, wsModel =>
+    referenceTypes: mapValues(model, (wsModel) =>
       mapKeys(wsModel.referenceTypes, 'name')
     ),
-    componentTypes: mapValues(model, wsModel => mapKeys(wsModel.root, 'name')),
-    fields: mapValues(model, wsModel =>
+    componentTypes: mapValues(model, (wsModel) =>
+      mapKeys(wsModel.root, 'name')
+    ),
+    fields: mapValues(model, (wsModel) =>
       pivot(fieldsByModel[wsModel._id], 'name')
     ),
   };
@@ -79,13 +81,13 @@ const buildRemoteModel = (
 const buildRemoteGraph = <CF, RF>(
   workspaces: Record<WorkspaceName, AggregatedWorkspace>
 ): RemoteGraph<Partial<CF>, Partial<RF>> => ({
-  components: mapValues(workspaces, workspace =>
+  components: mapValues(workspaces, (workspace) =>
     pivot(
       workspace.components as (Component & Partial<RemoteComponent<CF>>)[],
       'customId'
     )
   ),
-  references: mapValues(workspaces, workspace =>
+  references: mapValues(workspaces, (workspace) =>
     pivot(
       workspace.references as (Reference & Partial<RemoteReference<RF>>)[],
       'customId'
@@ -99,14 +101,14 @@ const buildIdMap = (
   local: LocalGraph,
   remote: RemoteGraph
 ): IdMap => ({
-  refTypes: mapValues(model.referenceTypes, refTypes =>
+  refTypes: mapValues(model.referenceTypes, (refTypes) =>
     collectRefTypes(refTypes)
   ),
-  compTypes: mapValues(model.componentTypes, compTypes =>
+  compTypes: mapValues(model.componentTypes, (compTypes) =>
     collectCompTypes(compTypes)
   ),
   components: construct([
-    ...map(local.components, components =>
+    ...map(local.components, (components) =>
       map(components, ({ customId }) => [customId, customId] as const)
     ).flat(),
     ...map(remote.components, (components, workspace) =>
@@ -121,7 +123,7 @@ const buildIdMap = (
     ).flat(),
   ]),
   compWorkspaces: construct(
-    map(local.components, components =>
+    map(local.components, (components) =>
       map(
         components,
         ({ customId, workspace }) => [customId, workspaces[workspace]] as const
@@ -171,7 +173,10 @@ const buildIdMap = (
  *               push and pull custom fields, but without them the fields wont
  *               show up in Ardoq
  */
-export const sync = async <CF, RF>(
+export const sync = async <
+  CF extends Record<string, unknown>,
+  RF extends Record<string, unknown>
+>(
   apiProperties: ApiProperties,
   workspaces: Record<WorkspaceName, AqWorkspaceId>,
   graph: Graph<CF, RF>,

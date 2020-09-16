@@ -13,14 +13,14 @@ const encodeQuery = (query: { [key: string]: string }) =>
 const readResponseBody = async (response: Response) =>
   response
     .text()
-    .then(text => {
+    .then((text) => {
       try {
         return JSON.parse(text);
       } catch {
         return text;
       }
     })
-    .catch(err => (err.message ? err.message : 'No message'));
+    .catch((err) => (err.message ? err.message : 'No message'));
 
 export class RequestError extends Error {
   url: string;

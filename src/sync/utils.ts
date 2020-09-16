@@ -28,7 +28,7 @@ export const pivot = <T, K extends keyof T>(
   construct(
     (arr || [])
       .filter(truthyKey(key))
-      .map<[T[K] & PropertyKey, Force<T, K>]>(element => [
+      .map<[T[K] & PropertyKey, Force<T, K>]>((element) => [
         element[key] as any,
         element,
       ])
@@ -40,7 +40,7 @@ export const group = <T, K extends keyof T>(
 ): Record<T[K] & PropertyKey, Force<T, K>[]> =>
   arr
     .filter(truthyKey(key))
-    .map<[T[K] & PropertyKey, Force<T, K>]>(element => [
+    .map<[T[K] & PropertyKey, Force<T, K>]>((element) => [
       element[key] as any,
       element,
     ])
@@ -80,7 +80,7 @@ export const hasAllSameAttributes = <T>(
 
 export const setDifference = <A, B>(a: A[], b: B[]): A[] => {
   const bSet = new Set(b);
-  return unique(a.filter(e => !bSet.has(e as any)));
+  return unique(a.filter((e) => !bSet.has(e as any)));
 };
 
 export const setIntersection = <A, B>(a: A[], b: B[]): (A & B)[] => {
@@ -90,6 +90,7 @@ export const setIntersection = <A, B>(a: A[], b: B[]): (A & B)[] => {
 
 export const mapValuesAsync = async <K extends string | number, V, R>(
   rec: Record<K, V>,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   mapper: (v: V) => Promise<R>
 ): Promise<Record<K, R>> =>
   construct(

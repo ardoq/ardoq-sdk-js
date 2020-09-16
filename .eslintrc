@@ -1,3 +1,7 @@
 {
-  "extends": "./node_modules/@ardoq/shared-configs/eslint-lib"
+  "extends": "./node_modules/@ardoq/shared-configs/eslint-lib",
+  "rules": {
+    "no-shadow": ["off"],
+    "@typescript-eslint/no-shadow": ["error"]
+  }
 }

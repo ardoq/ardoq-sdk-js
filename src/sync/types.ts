@@ -22,7 +22,10 @@ export type LocalReference<Fields> = SimpleReference<Fields> & {
   sourceWorkspace: WorkspaceName;
   targetWorkspace: WorkspaceName;
 };
-export type LocalGraph<ComponentFields = {}, ReferenceFields = {}> = {
+export type LocalGraph<
+  ComponentFields = Record<string, unknown>,
+  ReferenceFields = Record<string, unknown>
+> = {
   components: Record<
     WorkspaceName,
     Record<CustomComponentId, LocalComponent<ComponentFields>>
@@ -39,7 +42,10 @@ export type RemoteComponent<Fields> = Component &
   Fields & { customId: CustomComponentId };
 export type RemoteReference<Fields> = Reference &
   Fields & { customId: CustomReferenceId };
-export type RemoteGraph<CF = {}, RF = {}> = {
+export type RemoteGraph<
+  CF = Record<string, unknown>,
+  RF = Record<string, unknown>
+> = {
   components: Record<
     WorkspaceName,
     Record<CustomComponentId, RemoteComponent<CF>>
