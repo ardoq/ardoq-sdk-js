@@ -24,8 +24,8 @@ import { getAggregatedWorkspace, updateComponent } from 'ardoq-sdk-js';
 
 const apiProps = {
   authToken: '<authentication token>',
-  org: 'my-org',
-  url: 'https://app.ardoq.com/api/',
+  org: '<my-org>',
+  url: 'https://<custom-subdomain>.ardoq.com/api/',
 };
 
 const main = async () => {
@@ -52,9 +52,9 @@ remotely being updated as long as the `customId`s stay the same.
 import { sync, FieldType } from "ardoq-sdk-js";
 
 const apiProps = {
-  authToken: "<authentication token>",
-  org: "my-org",
-  url: "https://app.ardoq.com/api/"
+  authToken: '<authentication token>',
+  org: '<my-org>',
+  url: 'https://<custom-subdomain>.ardoq.com/api/'
 };
 
 const fields = [
