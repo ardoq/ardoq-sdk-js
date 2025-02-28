@@ -1,5 +1,9 @@
 # Ardoq SDK JS
 
+⚠️ **DEPRECATION NOTICE:** _This JavaScript SDK is now deprecated and will be archived. For future development, please use the public REST API documented at https://developer.ardoq.com/._
+
+---
+
 This is an, as of yet, small SDK for developing against the Ardoq API.
 It currently constist of two parts:
 
